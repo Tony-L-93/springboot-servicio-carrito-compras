@@ -39,9 +39,9 @@ public class Cart {
 	    @Column(name = "status")
 	    private CartStatus status;*/
 
-	    @OneToMany(mappedBy = "cart")
+	    /*@OneToMany(mappedBy = "cart")
 	    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	    private Set<Product> products = new HashSet<>();
+	    private Set<Product> products = new HashSet<>();*/
 
 	   /* @ManyToOne
 	    @JsonIgnoreProperties(value = "carts", allowSetters = true)

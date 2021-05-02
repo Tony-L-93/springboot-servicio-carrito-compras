@@ -1,5 +1,8 @@
 package com.carrito.compras.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +32,26 @@ public class ProductService implements ServiceGeneric<ProductApi, ProductDTO> {
 	}
 
 	@Override
-	public void update(ProductApi entity) {
+	public void update(String id,ProductApi entity) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void delete(String id) {
 		// TODO Auto-generated method stub
+	}
+	
+	public List<ProductDTO> findAll(){
+		return Mapper.mapperToProductsDTO(productRepository.findAll());
+	}
 
+	public List<Product> findIdProducts(List<Long> products) {
+		List<Product> productList=new ArrayList<>();
+		for(Long id:products) {
+			productList.add(productRepository.findById(id).get());
+		}
+	
+		return productList;
 	}
 
 }

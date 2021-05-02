@@ -1,12 +1,15 @@
 package com.carrito.compras.service.generic;
 
-public interface ServiceGeneric <T, S>{
+import com.carrito.compras.exception.TransactionException;
 
-	public void create(T entity);
-	
-	public S getById(String id);
-	
-	public void update(T entity);
-	
-	public void delete(String id);
+public interface ServiceGeneric<T, S> {
+
+	public void create(T entity) throws TransactionException;
+
+	public S getById(String id) throws TransactionException;
+
+
+	public void delete(String id) throws TransactionException;
+
+	public void update(String id,T entity) throws TransactionException;
 }

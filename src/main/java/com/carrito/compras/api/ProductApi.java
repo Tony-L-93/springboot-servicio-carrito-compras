@@ -1,6 +1,7 @@
 package com.carrito.compras.api;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,7 +26,7 @@ public class ProductApi {
 	@JsonProperty(value = "description", required = true)
 	private String description;
 
-	@NotBlank(message = "Price cannot be null")
+	@NotNull(message = "Price cannot be null")
 	@JsonProperty(value = "price", required = true)
-	private String price;
+	private Float price;
 }

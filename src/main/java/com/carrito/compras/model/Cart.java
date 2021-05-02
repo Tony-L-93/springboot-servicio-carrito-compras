@@ -1,20 +1,21 @@
 package com.carrito.compras.model;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import com.carrito.compras.enumerator.CartStatus;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,24 +25,27 @@ import lombok.Setter;
 @Table(name = "cart")
 @Entity
 public class Cart {
-	   @Id
-	    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-	    @SequenceGenerator(name = "sequenceGenerator")
-	    private Long id;
+	@Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
+	private Long id;
 
-	    @Column(name = "total_price")
-	    private Float totalPrice;
+	@Column(name = "total_price", nullable = true)
+	private Float totalPrice;
 
-	    @Column(name = "date")
-	    private LocalDate date;
+	@Column(name = "date", nullable = true, columnDefinition = "DATETIME")
+	private LocalDate date;
 
-	    /*@Enumerated(EnumType.STRING)
-	    @Column(name = "status")
-	    private CartStatus status;*/
+	@Column(name = "status")
+	@Enumerated(EnumType.STRING)
+	private CartStatus status;
+	
+	@Column(name = "discount")
+	private Integer discount;
 
-	    /*@OneToMany(mappedBy = "cart")
-	    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	    private Set<Product> products = new HashSet<>();*/
+	@ManyToMany(cascade = CascadeType.ALL)
+	@Column(name = "products", nullable = true)
+	private List<Product> products;
 
 	   /* @ManyToOne
 	    @JsonIgnoreProperties(value = "carts", allowSetters = true)

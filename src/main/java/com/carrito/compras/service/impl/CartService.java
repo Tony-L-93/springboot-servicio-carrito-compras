@@ -1,8 +1,10 @@
 package com.carrito.compras.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,6 +117,50 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 
 	public List<CartDTO> findAll() {
 		return Mapper.mapperToCartsDTO(cartRepository.findAll());
+	}
+
+	public void addProducts(String cartId, CartApi cartApi) throws TransactionException {
+		
+		Cart cart = findById(cartId);
+		try {
+			
+			List<Product> products = productService.findIdProducts(cartApi.getProducts());
+			List<Product> newProductsList=cart.getProducts();
+			newProductsList.addAll(products);
+			
+			List<Float> infoPrices = totalPrice(newProductsList);
+			
+			cart.setProducts(newProductsList);
+			cart.setTotalPrice(infoPrices.get(0));
+			cart.setDate(cartApi.getDate());
+			cart.setDiscount(infoPrices.get(1).intValue());		
+
+			cartRepository.save(cart);
+		} catch (Exception e) {
+			throw new TransactionException(CartEnum.UPDATE_ERROR.getCode(), CartEnum.UPDATE_ERROR.getDescription());
+		}	
+	}
+
+	public void delProducts(String cartId, CartApi cartApi) throws TransactionException {
+		Cart cart = findById(cartId);
+		try {
+		
+			List<Product> productsToDelete = productService.findIdProducts(cartApi.getProducts());
+			List<Product> oldProducts=cart.getProducts();
+			List<Product> newProducts=oldProducts.stream().filter(p ->productsToDelete.stream().noneMatch(p::equals)).collect(Collectors.toList());
+			
+			List<Float> infoPrices = totalPrice(newProducts);
+			
+			cart.setProducts(newProducts);
+			cart.setTotalPrice(infoPrices.get(0));
+			cart.setDate(cartApi.getDate());
+			cart.setDiscount(infoPrices.get(1).intValue());		
+
+			cartRepository.save(cart);
+		} catch (Exception e) {
+			throw new TransactionException(CartEnum.UPDATE_ERROR.getCode(), CartEnum.UPDATE_ERROR.getDescription());
+		}	
+		
 	}
 
 }

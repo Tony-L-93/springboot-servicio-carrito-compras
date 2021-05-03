@@ -44,5 +44,17 @@ public class CartController {
 		cartService.update(cartId,cartApi);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.UPDATE_OK);
 	}
+	
+	@PutMapping(value="/{cartId}/add",produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<CartEnum> addProducts(@PathVariable("cartId") String cartId,@RequestBody @Validated CartApi cartApi) throws TransactionException {
+		cartService.addProducts(cartId,cartApi);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.UPDATE_OK);
+	}
+	
+	@PutMapping(value="/{cartId}/del",produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<CartEnum> delProducts(@PathVariable("cartId") String cartId,@RequestBody @Validated CartApi cartApi) throws TransactionException {
+		cartService.delProducts(cartId,cartApi);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.UPDATE_OK);
+	}
 
 }

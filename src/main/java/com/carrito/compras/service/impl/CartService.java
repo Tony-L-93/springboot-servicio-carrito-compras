@@ -18,6 +18,9 @@ import com.carrito.compras.mapper.Mapper;
 import com.carrito.compras.model.Cart;
 import com.carrito.compras.model.Product;
 import com.carrito.compras.repository.CartRepository;
+import com.carrito.compras.repository.ProductRepository;
+import com.carrito.compras.repository.PromotionRepository;
+import com.carrito.compras.repository.UserRepository;
 import com.carrito.compras.service.generic.ServiceGeneric;
 import com.carrito.compras.utils.Calculates;
 
@@ -25,7 +28,10 @@ import com.carrito.compras.utils.Calculates;
 public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 	@Autowired
 	private CartRepository cartRepository;
-
+	
+	@Autowired
+	private PromotionRepository promotionRepository;
+	
 	@Autowired
 	private ProductService productService;
 	
@@ -42,6 +48,10 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 		} catch (Exception e) {
 			throw new TransactionException(CartEnum.CREATE_ERROR.getCode(), CartEnum.CREATE_ERROR.getDescription());
 		}
+	}
+	
+	public void createDB(Cart cart) {
+		cartRepository.save(cart);
 	}
 
 	@Override
@@ -62,16 +72,44 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 	}
 
 	public void updateCart(String userId,String cartId, CartApiUpdate cartApi) throws TransactionException {
-		
+			LocalDate starPromotion=promotionRepository.getOne((long) 102).getStartDate();
+			LocalDate endPromotion=promotionRepository.getOne((long) 102).getEndDate();
+			
 		try {
 			Cart cart = findById(cartId);
 			List<Product> products = productService.findIdProducts(cartApi.getProducts());
-			List<Float> infoPrices = Calculates.totalPrice(products);
-
-			cart.setProducts(products);
-			cart.setTotalPrice(infoPrices.get(0));
-			cart.setDate(LocalDate.now());
-			cart.setDiscount(infoPrices.get(1).intValue());
+			
+			if(!cart.getStatus().equals(CartStatus.COMPLETE)) {
+				List<Cart> userCarts=cartRepository.findAll().stream().
+						filter(p->p.getUserId().equals(Integer.valueOf(userId))).
+						filter(p->p.getTotalPrice() !=null).
+						filter(p->p.getStatus().equals(CartStatus.COMPLETE)).collect(Collectors.toList());
+				if(!userCarts.isEmpty()){
+					List<Cart> currentMonthCarts= userCarts.stream().
+							filter(p->p.getUserId().equals(Integer.valueOf(userId))).
+							filter(p-> p.getDate().isAfter(starPromotion) || p.getDate().equals(starPromotion)).
+							filter(p-> p.getDate().isBefore(endPromotion)|| p.getDate().equals(endPromotion)).
+							collect(Collectors.toList());
+					Double totalSpent=currentMonthCarts.stream().mapToDouble(p->p.getTotalPrice()).sum();
+					List<Float> infoPrices = Calculates.totalPricePromotion(products,totalSpent);
+					cart.setProducts(products);
+					cart.setTotalPrice(infoPrices.get(0));
+					cart.setDiscount(infoPrices.get(1).intValue());
+				}
+				else {
+					List<Float> infoPrices = Calculates.totalPrice(products);
+					cart.setProducts(products);
+					cart.setTotalPrice(infoPrices.get(0));
+					cart.setDiscount(infoPrices.get(1).intValue());
+				}
+			}
+			else {
+				List<Float> infoPrices = Calculates.totalPrice(products);
+				cart.setProducts(products);
+				cart.setTotalPrice(infoPrices.get(0));
+				cart.setDiscount(infoPrices.get(1).intValue());
+			}
+			
 			cartRepository.save(cart);
 			userService.addCart(userId, cartId);
 		} catch (Exception e) {
@@ -87,14 +125,13 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 			cartRepository.deleteById(Long.valueOf(id));
 		}
 		else {
-		try {
+			try {
 			cart.getProducts().clear();
 			userService.cleanCart(cart.getUserId().toString(), cart.getId().toString());
-			cartRepository.save(cart);
 			cartRepository.deleteById(Long.valueOf(id));
-		} catch (Exception e) {
+			} catch (Exception e) {
 			throw new TransactionException(CartEnum.UPDATE_ERROR.getCode(), CartEnum.UPDATE_ERROR.getDescription());
-		}
+			}
 		}
 	}
 
@@ -115,7 +152,6 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 
 			cart.setProducts(newProductsList);
 			cart.setTotalPrice(infoPrices.get(0));
-			cart.setDate(LocalDate.now());
 			cart.setDiscount(infoPrices.get(1).intValue());
 
 			cartRepository.save(cart);
@@ -138,7 +174,6 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 
 			cart.setProducts(newProducts);
 			cart.setTotalPrice(infoPrices.get(0));
-			cart.setDate(LocalDate.now());
 			cart.setDiscount(infoPrices.get(1).intValue());
 			cartRepository.save(cart);
 			userService.updateCart(userId, cartId,cart);

@@ -35,15 +35,8 @@ public class UserService {
 		
 		User user = findById(userId);
 		List<Cart> carts=user.getCart();
-		if(carts!=null) {
-			carts.add(cartService.findById(cartId));
-			user.setCart(carts);
-		}
-		else {
-			List<Cart> inicialCarts=new ArrayList<>();
-			inicialCarts.add(cartService.findById(cartId));
-			user.setCart(inicialCarts);
-		}
+		carts.add(cartService.findById(cartId));
+		user.setCart(carts);
 		
 		userRepository.save(user);
 	}
@@ -67,9 +60,14 @@ public class UserService {
 	public void updateCart(String userId, String cartId, Cart cart) throws TransactionException {
 		User user = findById(userId);
 		List<Cart> carts=user.getCart();
-		user.getCart().clear();
-		carts.stream().filter(p -> Long.valueOf(cartId).equals(p)).forEach(p-> user.getCart().remove(p));
-		carts.add(cart);
+		if(!carts.isEmpty()) {
+			user.getCart().clear();
+			carts.stream().filter(p -> Long.valueOf(cartId).equals(p)).forEach(p-> user.getCart().remove(p));
+			carts.add(cart);
+		}
+		else {
+			carts.add(cart);
+		}
 		user.setCart(carts);
 		userRepository.save(user);
 	}
@@ -77,8 +75,8 @@ public class UserService {
 	public void cleanCart(String userId, String cartId) throws TransactionException {
 		User user = findById(userId);
 		List<Cart> carts=user.getCart();
-		user.getCart().clear();
 		carts.removeIf(p -> Long.valueOf(cartId).equals(p));
+		user.getCart().removeIf(p->p.getId().equals(Long.valueOf(cartId)));
 		user.setCart(carts);
 		userRepository.save(user);
 	}

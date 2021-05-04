@@ -11,6 +11,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -45,7 +46,7 @@ public class Cart {
 	private Integer discount;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@Column(name = "products", nullable = true)
+	@JoinColumn(name = "id_product")
 	private List<Product> products;
 	
 	@Column(name = "user_id", nullable = true)

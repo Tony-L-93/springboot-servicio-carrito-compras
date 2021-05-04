@@ -25,20 +25,19 @@ public class ProductService implements ServiceGeneric<ProductApi, ProductDTO> {
 
 	}
 
+	
 	@Override
 	public ProductDTO getById(String id) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void update(String id,ProductApi entity) {
-		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void delete(String id) {
-		// TODO Auto-generated method stub
 	}
 	
 	public List<ProductDTO> findAll(){

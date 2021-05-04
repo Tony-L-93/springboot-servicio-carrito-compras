@@ -1,5 +1,6 @@
 package com.carrito.compras;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -7,7 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.carrito.compras.exception.TransactionException;
 import com.carrito.compras.mapper.Mapper;
+import com.carrito.compras.service.impl.CartService;
 import com.carrito.compras.service.impl.ProductService;
 import com.carrito.compras.service.impl.PromotionService;
 import com.carrito.compras.service.impl.UserService;
@@ -23,7 +26,7 @@ public class SpringbootServicioCarritocomprasApplication {
 	}
 	
 	@Bean
-	public CommandLineRunner init(final ProductService productService, final UserService userService, final PromotionService promotionService) {
+	public CommandLineRunner init(final ProductService productService, final UserService userService, final PromotionService promotionService,final CartService cartService) {
 		return new CommandLineRunner() {
 
 			@Override
@@ -38,8 +41,11 @@ public class SpringbootServicioCarritocomprasApplication {
 				}
 				
 				if(promotionService.findAll().size()==0) {
-					InitialLoad.createPromotion();
-					
+					InitialLoad.createPromotion().stream().forEach(p->promotionService.create(Mapper.mapperToPromotion(p)));
+				}
+
+				if(cartService.findAll().size()==0) {
+					InitialLoad.createCart().stream().forEach(p->cartService.createDB(p));
 				}
 				
 			}

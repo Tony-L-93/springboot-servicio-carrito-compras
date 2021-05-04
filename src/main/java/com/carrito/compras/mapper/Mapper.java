@@ -92,5 +92,9 @@ public class Mapper {
 	public static Promotion mapperToPromotion(PromotionApi promotionApi) {
 		return modelMapper.map(promotionApi, Promotion.class);
 	}
+
+	public static PromotionApi mapperToPromotion(Promotion promotion) {
+		return modelMapper.map(promotion, PromotionApi.class);
+	}
 	
 }

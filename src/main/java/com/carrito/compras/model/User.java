@@ -5,11 +5,13 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -19,7 +21,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Table(name = "user")
+@Table(name = "users")
 @Entity
 public class User {
 	@Id
@@ -41,8 +43,8 @@ public class User {
     @Column(name = "cell_phone", nullable = false)
     private String cellPhone;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cart", nullable = true)
+	@ManyToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_cart")
 	private List<Cart> cart;
     
 

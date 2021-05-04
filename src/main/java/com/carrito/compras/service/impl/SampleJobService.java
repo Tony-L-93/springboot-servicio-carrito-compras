@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import javax.transaction.Transactional;
 
 import com.carrito.compras.enumerator.CartStatus;
 import com.carrito.compras.exception.TransactionException;
@@ -16,7 +17,8 @@ public class SampleJobService {
 	@Autowired
 	private CartService cartService;
 	
-	@Scheduled(cron="0 0/2 * 1/1 * *")//2 minuto
+	@Scheduled(cron="0 0/5 * 1/1 * *")//5 minutos
+	@Transactional
 	public void destroyCarts() throws TransactionException {
 		
 		List<Cart> carts=cartService.findAllEntitys();
@@ -26,5 +28,4 @@ public class SampleJobService {
 			}
 		}
 	}
-
 }

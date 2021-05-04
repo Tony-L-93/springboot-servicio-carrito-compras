@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.carrito.compras.model.Product;
+import com.carrito.compras.model.User;
 
 public class InitialLoad {
 
@@ -84,5 +85,33 @@ public class InitialLoad {
 		return Arrays.asList(product1, product2, product3, product4, product5, product6, product7, product8, product9,
 				product10, product11, product12);
 	}
+	
+	public static List<User> createUser() {
+		User user1=new User();
+		User user2=new User();
+		User user3=new User();
+		
+		user1.setId(100L);
+		user1.setName("Tony");
+		user1.setSurname("Liendro");
+		user1.setEmail("tony@gmail.com");
+		user1.setCellPhone("1578962589");
+		
+		user2.setId(101L);
+		user2.setName("Sole");
+		user2.setSurname("Leyes");
+		user2.setEmail("sole@gmail.com");
+		user2.setCellPhone("1578962698");
+		
+		user3.setId(102L);
+		user3.setName("Matias");
+		user3.setSurname("Gomez");
+		user3.setEmail("matias@gmail.com");
+		user3.setCellPhone("1578961587");
+		
+		
+		return Arrays.asList(user1,user2,user3);
+	}
+	
 
 }

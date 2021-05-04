@@ -14,17 +14,17 @@ public class CartDTO {
 	@JsonProperty(value = "id")
 	private Long id;
 
-	@JsonProperty(value = "totalPrice")
-	private Float totalPrice;
-
 	@JsonProperty(value = "date")
 	private LocalDate date;
 
-	@JsonProperty(value = "status")
-	private String status;
-	
+	@JsonProperty(value = "totalPrice")
+	private Float totalPrice;
+
 	@JsonProperty(value = "discount")
 	private Integer discount;
+
+	@JsonProperty(value = "status")
+	private String status;
 
 	@JsonProperty(value = "products")
 	private List<ProductDTO> products;

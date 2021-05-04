@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -46,8 +47,7 @@ public class Cart {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@Column(name = "products", nullable = true)
 	private List<Product> products;
-
-	   /* @ManyToOne
-	    @JsonIgnoreProperties(value = "carts", allowSetters = true)
-	    private Customer customer;*/
+	
+	@Column(name = "user_id", nullable = true)
+	private Integer userId;
 }

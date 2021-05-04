@@ -8,11 +8,14 @@ import org.springframework.stereotype.Component;
 
 import com.carrito.compras.api.CartApi;
 import com.carrito.compras.api.ProductApi;
+import com.carrito.compras.api.UserApi;
 import com.carrito.compras.dto.CartDTO;
 import com.carrito.compras.dto.ProductDTO;
+import com.carrito.compras.dto.UserDTO;
 import com.carrito.compras.enumerator.CartStatus;
 import com.carrito.compras.model.Cart;
 import com.carrito.compras.model.Product;
+import com.carrito.compras.model.User;
 
 @Component
 public class Mapper {
@@ -43,9 +46,6 @@ public class Mapper {
 
 	public static Cart mapperToCart(CartApi cartApi) {
 		Cart cart = modelMapper.map(cartApi, Cart.class);
-		if(cartApi.getStatus()!=null) {
-			cart.setStatus(mapperToEnum(cartApi.getStatus()));
-		}
 		return cart;
 	}
 
@@ -63,6 +63,28 @@ public class Mapper {
 		List<CartDTO> cartDTOList = new ArrayList<>();
 		carts.stream().forEach(p -> cartDTOList.add(mapperToCartDTO(p)));
 		return cartDTOList;
+	}
+
+	public static User mapperToUser(UserApi userApi) {
+		User user=modelMapper.map(userApi, User.class);
+		return user;
+	}
+
+	public static UserApi mapperToUserApi(User user) {
+		UserApi userApi=modelMapper.map(user, UserApi.class);
+		return userApi;
+	}
+
+	public static List<UserDTO> mapperToUsersApi(List<User> users) {
+		List<UserDTO> userDTOList = new ArrayList<>();
+		users.stream().forEach(p -> userDTOList.add(mapperToUsertDTO(p)));
+		return userDTOList;
+	}
+
+	private static UserDTO mapperToUsertDTO(User user) {
+		UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+		userDTO.setCart(mapperToCartsDTO(user.getCart()));
+		return userDTO;
 	}
 
 }

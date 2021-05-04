@@ -1,7 +1,6 @@
 package com.carrito.compras.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.carrito.compras.api.CartApi;
+import com.carrito.compras.api.CartApiUpdate;
 import com.carrito.compras.dto.CartDTO;
 import com.carrito.compras.enumerator.CartEnum;
 import com.carrito.compras.enumerator.CartStatus;
@@ -19,6 +19,7 @@ import com.carrito.compras.model.Cart;
 import com.carrito.compras.model.Product;
 import com.carrito.compras.repository.CartRepository;
 import com.carrito.compras.service.generic.ServiceGeneric;
+import com.carrito.compras.utils.Calculates;
 
 @Service
 public class CartService implements ServiceGeneric<CartApi, CartDTO> {
@@ -27,41 +28,20 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private UserService userService;
 
-	@Override
-	public void create(CartApi cartApi) throws TransactionException {
-		try {
-			List<Product> products = productService.findIdProducts(cartApi.getProducts());
-			List<Float> infoPrices = totalPrice(products);
-
-			Cart cart = Mapper.mapperToCart(cartApi);
+	public void create(String userId) throws TransactionException {
+		try {	
+			Cart cart = new Cart();
 			cart.setStatus(CartStatus.OPEN);
-			cart.setProducts(products);
-			cart.setTotalPrice(infoPrices.get(0));
-			cart.setDiscount(infoPrices.get(1).intValue());
+			cart.setDate(LocalDate.now());
+			cart.setUserId(Integer.valueOf(userId));
 			cartRepository.save(cart);
 		} catch (Exception e) {
 			throw new TransactionException(CartEnum.CREATE_ERROR.getCode(), CartEnum.CREATE_ERROR.getDescription());
 		}
-
-	}
-
-	private List<Float> totalPrice(List<Product> products) {
-		List<Float> infoPrice = new ArrayList<>();
-		float discount = 0;
-		float totalPrice = (float) products.stream().mapToDouble(p -> p.getPrice()).sum();
-		
-		if (products.size() >= 5 && products.size() < 10) {
-			totalPrice = (float) (totalPrice * 0.95);
-			discount = 95;
-		}
-		if (products.size() >= 10) {
-			totalPrice = (float) (totalPrice * 0.90);
-			discount = 90;
-		}
-		infoPrice.add(totalPrice);
-		infoPrice.add(discount);
-		return infoPrice;
 	}
 
 	@Override
@@ -70,7 +50,7 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 		return Mapper.mapperToCartDTO(cart);
 	}
 
-	private Cart findById(String id) throws TransactionException {
+	public Cart findById(String id) throws TransactionException {
 
 		Optional<Cart> optional = cartRepository.findById(Long.parseLong(id));
 
@@ -81,33 +61,31 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 		}
 	}
 
-	@Override
-	public void update(String cartId, CartApi cartApi) throws TransactionException {
-		Cart cart = findById(cartId);
+	public void updateCart(String userId,String cartId, CartApiUpdate cartApi) throws TransactionException {
+		
 		try {
-			
+			Cart cart = findById(cartId);
 			List<Product> products = productService.findIdProducts(cartApi.getProducts());
-			List<Float> infoPrices = totalPrice(products);
-			
+			List<Float> infoPrices = Calculates.totalPrice(products);
+
 			cart.setProducts(products);
 			cart.setTotalPrice(infoPrices.get(0));
-			cart.setDate(cartApi.getDate());
+			cart.setDate(LocalDate.now());
 			cart.setDiscount(infoPrices.get(1).intValue());
-			
-
 			cartRepository.save(cart);
+			userService.addCart(userId, cartId);
 		} catch (Exception e) {
 			throw new TransactionException(CartEnum.UPDATE_ERROR.getCode(), CartEnum.UPDATE_ERROR.getDescription());
 		}
-		
 
 	}
 
 	@Override
 	public void delete(String id) throws TransactionException {
-		Cart cart=findById(id);
+		Cart cart = findById(id);
 		try {
-			cart.getProducts().clear();			
+			cart.getProducts().clear();
+			userService.cleanCart(cart.getUserId().toString(), cart.getId().toString());
 			cartRepository.save(cart);
 			cartRepository.deleteById(Long.valueOf(id));
 		} catch (Exception e) {
@@ -119,48 +97,66 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 		return Mapper.mapperToCartsDTO(cartRepository.findAll());
 	}
 
-	public void addProducts(String cartId, CartApi cartApi) throws TransactionException {
-		
+	public void addProducts(String userId,String cartId, CartApiUpdate cartApi) throws TransactionException {
+
 		Cart cart = findById(cartId);
 		try {
-			
+
 			List<Product> products = productService.findIdProducts(cartApi.getProducts());
-			List<Product> newProductsList=cart.getProducts();
+			List<Product> newProductsList = cart.getProducts();
 			newProductsList.addAll(products);
-			
-			List<Float> infoPrices = totalPrice(newProductsList);
-			
+
+			List<Float> infoPrices = Calculates.totalPrice(newProductsList);
+
 			cart.setProducts(newProductsList);
 			cart.setTotalPrice(infoPrices.get(0));
-			cart.setDate(cartApi.getDate());
-			cart.setDiscount(infoPrices.get(1).intValue());		
+			cart.setDate(LocalDate.now());
+			cart.setDiscount(infoPrices.get(1).intValue());
 
 			cartRepository.save(cart);
+			userService.updateCart(userId, cartId,cart);
 		} catch (Exception e) {
 			throw new TransactionException(CartEnum.UPDATE_ERROR.getCode(), CartEnum.UPDATE_ERROR.getDescription());
-		}	
+		}
 	}
 
-	public void delProducts(String cartId, CartApi cartApi) throws TransactionException {
+	public void delProducts(String userId,String cartId, CartApiUpdate cartApi) throws TransactionException {
 		Cart cart = findById(cartId);
 		try {
-		
+
 			List<Product> productsToDelete = productService.findIdProducts(cartApi.getProducts());
-			List<Product> oldProducts=cart.getProducts();
-			List<Product> newProducts=oldProducts.stream().filter(p ->productsToDelete.stream().noneMatch(p::equals)).collect(Collectors.toList());
-			
-			List<Float> infoPrices = totalPrice(newProducts);
-			
+			List<Product> oldProducts = cart.getProducts();
+			List<Product> newProducts = oldProducts.stream().filter(p -> productsToDelete.stream().noneMatch(p::equals))
+					.collect(Collectors.toList());
+
+			List<Float> infoPrices = Calculates.totalPrice(newProducts);
+
 			cart.setProducts(newProducts);
 			cart.setTotalPrice(infoPrices.get(0));
-			cart.setDate(cartApi.getDate());
-			cart.setDiscount(infoPrices.get(1).intValue());		
-
+			cart.setDate(LocalDate.now());
+			cart.setDiscount(infoPrices.get(1).intValue());
 			cartRepository.save(cart);
+			userService.updateCart(userId, cartId,cart);
 		} catch (Exception e) {
 			throw new TransactionException(CartEnum.UPDATE_ERROR.getCode(), CartEnum.UPDATE_ERROR.getDescription());
-		}	
+		}
+
+	}
+
+	@Override
+	public void update(String id, CartApi entity) throws TransactionException {
+		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void create(CartApi entity) throws TransactionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public List<Cart> findAllEntitys() {
+		return cartRepository.findAll();
 	}
 
 }

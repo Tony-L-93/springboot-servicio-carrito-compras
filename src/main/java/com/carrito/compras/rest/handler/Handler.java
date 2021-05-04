@@ -1,4 +1,4 @@
-package com.carrito.compras.handler;
+package com.carrito.compras.rest.handler;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 

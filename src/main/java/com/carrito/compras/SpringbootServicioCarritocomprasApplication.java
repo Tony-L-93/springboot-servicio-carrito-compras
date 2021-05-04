@@ -1,8 +1,5 @@
 package com.carrito.compras;
 
-import java.awt.GraphicsEnvironment;
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,29 +8,30 @@ import org.springframework.context.annotation.Bean;
 
 import com.carrito.compras.mapper.Mapper;
 import com.carrito.compras.service.impl.ProductService;
+import com.carrito.compras.service.impl.UserService;
 import com.carrito.compras.utils.InitialLoad;
 
 @SpringBootApplication
 public class SpringbootServicioCarritocomprasApplication {
 
-	@Value("${database.url")
-	private String url;
+	@Value(value = "")
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootServicioCarritocomprasApplication.class, args);
 	}
 	
 	@Bean
-	public CommandLineRunner init(final ProductService productService) {
+	public CommandLineRunner init(final ProductService productService, final UserService userService) {
 		return new CommandLineRunner() {
 
 			@Override
 			public void run(String... args) throws Exception {
-				String[] fontNames=GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-				System.out.println(Arrays.toString(fontNames));
 				
-				System.out.println("Url *****"+url);
 				if(productService.findAll().size()==0) {
 					InitialLoad.createProduct().stream().forEach(p->productService.create(Mapper.mapperToProductApi(p)));
+				}
+	
+				if(userService.findAll().size()==0) {
+					InitialLoad.createUser().stream().forEach(p->userService.create(Mapper.mapperToUserApi(p)));
 				}
 				
 			}

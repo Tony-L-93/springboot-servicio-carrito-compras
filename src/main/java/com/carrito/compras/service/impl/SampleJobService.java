@@ -16,7 +16,7 @@ public class SampleJobService {
 	@Autowired
 	private CartService cartService;
 	
-	@Scheduled(cron="0 0/5 * 1/1 * *")//5 minuto
+	@Scheduled(cron="0 0/2 * 1/1 * *")//2 minuto
 	public void destroyCarts() throws TransactionException {
 		
 		List<Cart> carts=cartService.findAllEntitys();

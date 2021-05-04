@@ -83,6 +83,10 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 	@Override
 	public void delete(String id) throws TransactionException {
 		Cart cart = findById(id);
+		if(cart.getProducts()==null) {
+			cartRepository.deleteById(Long.valueOf(id));
+		}
+		else {
 		try {
 			cart.getProducts().clear();
 			userService.cleanCart(cart.getUserId().toString(), cart.getId().toString());
@@ -90,6 +94,7 @@ public class CartService implements ServiceGeneric<CartApi, CartDTO> {
 			cartRepository.deleteById(Long.valueOf(id));
 		} catch (Exception e) {
 			throw new TransactionException(CartEnum.UPDATE_ERROR.getCode(), CartEnum.UPDATE_ERROR.getDescription());
+		}
 		}
 	}
 

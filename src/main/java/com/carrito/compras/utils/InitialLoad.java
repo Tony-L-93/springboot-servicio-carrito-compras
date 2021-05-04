@@ -1,9 +1,11 @@
 package com.carrito.compras.utils;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
 import com.carrito.compras.model.Product;
+import com.carrito.compras.model.Promotion;
 import com.carrito.compras.model.User;
 
 public class InitialLoad {
@@ -113,5 +115,15 @@ public class InitialLoad {
 		return Arrays.asList(user1,user2,user3);
 	}
 	
+	public static Promotion createPromotion() {
+		Promotion promotion=new Promotion();
+		
+		promotion.setId(Long.valueOf(1000));
+		promotion.setStartDate(LocalDate.of(2021, 5, 1));
+		promotion.setEndDate(LocalDate.of(2021, 5, 30));
+		
+		return promotion;
+		
+	}
 
 }

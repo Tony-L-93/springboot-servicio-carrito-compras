@@ -5,13 +5,16 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.carrito.compras.mapper.Mapper;
 import com.carrito.compras.service.impl.ProductService;
+import com.carrito.compras.service.impl.PromotionService;
 import com.carrito.compras.service.impl.UserService;
 import com.carrito.compras.utils.InitialLoad;
 
 @SpringBootApplication
+@EnableScheduling
 public class SpringbootServicioCarritocomprasApplication {
 
 	@Value(value = "")
@@ -20,7 +23,7 @@ public class SpringbootServicioCarritocomprasApplication {
 	}
 	
 	@Bean
-	public CommandLineRunner init(final ProductService productService, final UserService userService) {
+	public CommandLineRunner init(final ProductService productService, final UserService userService, final PromotionService promotionService) {
 		return new CommandLineRunner() {
 
 			@Override
@@ -32,6 +35,11 @@ public class SpringbootServicioCarritocomprasApplication {
 	
 				if(userService.findAll().size()==0) {
 					InitialLoad.createUser().stream().forEach(p->userService.create(Mapper.mapperToUserApi(p)));
+				}
+				
+				if(promotionService.findAll().size()==0) {
+					InitialLoad.createPromotion();
+					
 				}
 				
 			}

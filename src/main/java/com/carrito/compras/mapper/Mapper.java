@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.carrito.compras.api.CartApi;
 import com.carrito.compras.api.ProductApi;
+import com.carrito.compras.api.PromotionApi;
 import com.carrito.compras.api.UserApi;
 import com.carrito.compras.dto.CartDTO;
 import com.carrito.compras.dto.ProductDTO;
@@ -15,6 +16,7 @@ import com.carrito.compras.dto.UserDTO;
 import com.carrito.compras.enumerator.CartStatus;
 import com.carrito.compras.model.Cart;
 import com.carrito.compras.model.Product;
+import com.carrito.compras.model.Promotion;
 import com.carrito.compras.model.User;
 
 @Component
@@ -81,10 +83,14 @@ public class Mapper {
 		return userDTOList;
 	}
 
-	private static UserDTO mapperToUsertDTO(User user) {
+	public static UserDTO mapperToUsertDTO(User user) {
 		UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 		userDTO.setCart(mapperToCartsDTO(user.getCart()));
 		return userDTO;
 	}
 
+	public static Promotion mapperToPromotion(PromotionApi promotionApi) {
+		return modelMapper.map(promotionApi, Promotion.class);
+	}
+	
 }

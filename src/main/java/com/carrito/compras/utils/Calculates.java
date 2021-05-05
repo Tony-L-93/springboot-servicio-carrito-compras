@@ -37,12 +37,12 @@ public class Calculates {
 		if (products.size() >= 10) {
 			if(totalSpent>=10000) {
 				totalPrice = (float) ((totalPrice * 0.90)-500);
-				discount = 90;
+				discount = 500;
 			}
 			else {
 			totalSpent=totalSpent*0.05;
 			totalPrice = (float) ((totalPrice * 0.90)-totalSpent);
-			discount = 90;
+			discount = totalSpent.floatValue();
 			}
 		}
 		infoPrice.add(totalPrice);

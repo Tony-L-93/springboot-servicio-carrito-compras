@@ -11,10 +11,10 @@ import com.carrito.compras.dto.ProductDTO;
 import com.carrito.compras.mapper.Mapper;
 import com.carrito.compras.model.Product;
 import com.carrito.compras.repository.ProductRepository;
-import com.carrito.compras.service.generic.ServiceGeneric;
+import com.carrito.compras.service.generic.ProductServiceGeneric;
 
 @Service
-public class ProductService implements ServiceGeneric<ProductApi, ProductDTO> {
+public class ProductService implements ProductServiceGeneric<ProductApi, ProductDTO> {
 	@Autowired
 	private ProductRepository productRepository;
 
@@ -24,32 +24,17 @@ public class ProductService implements ServiceGeneric<ProductApi, ProductDTO> {
 		productRepository.save(product);
 
 	}
-
 	
-	@Override
-	public ProductDTO getById(String id) {
-		return null;
-	}
-
-	@Override
-	public void update(String id,ProductApi entity) {
-		
-	}
-
-	@Override
-	public void delete(String id) {
-	}
-	
-	public List<ProductDTO> findAll(){
+	public List<ProductDTO> findAll() {
 		return Mapper.mapperToProductsDTO(productRepository.findAll());
 	}
 
 	public List<Product> findIdProducts(List<Long> products) {
-		List<Product> productList=new ArrayList<>();
-		for(Long id:products) {
+		List<Product> productList = new ArrayList<>();
+		for (Long id : products) {
 			productList.add(productRepository.findById(id).get());
 		}
-	
+
 		return productList;
 	}
 

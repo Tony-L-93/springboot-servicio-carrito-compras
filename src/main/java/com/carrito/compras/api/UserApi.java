@@ -7,17 +7,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(Include.NON_EMPTY)
+@SuperBuilder
 public class UserApi {
-
-	@JsonProperty(value = "id", required = false)
-	private String id;
-
+	
 	@NotBlank(message = "Name cannot be empty")
 	@Size(max = 50, message = "Name must be 50 characters")
 	@JsonProperty(value = "name", required = true)
@@ -27,13 +30,13 @@ public class UserApi {
 	@Size(max = 50, message = "surname must be 50 characters")
 	@JsonProperty(value = "surname", required = true)
 	private String surname;
-	
+
 	@NotBlank(message = "Email cannot be empty")
 	@JsonProperty(value = "email", required = true)
 	private String email;
-	
+
 	@NotBlank(message = "Cell phone cannot be empty")
 	@JsonProperty(value = "cellPhone", required = true)
 	private String cellPhone;
-	
+
 }

@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.carrito.compras.api.CartApi;
 import com.carrito.compras.api.CartApiUpdate;
 import com.carrito.compras.dto.CartDTO;
 import com.carrito.compras.enumerator.CartEnum;
@@ -35,34 +34,47 @@ public class CartController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(cartService.findAll());
 	}
 
-	@PostMapping(value="/{userId}",produces = { MediaType.APPLICATION_JSON_VALUE })
+	@PostMapping(value = "/{userId}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<CartEnum> create(@PathVariable("userId") String userId) throws TransactionException {
 		cartService.create(userId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.CREATE_OK);
 	}
-	
-	@PutMapping(value="/{cartId}/user/{userId}",produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<CartEnum> update(@PathVariable("cartId") String cartId,@PathVariable("userId") String userId,@RequestBody @Validated CartApiUpdate cartApi) throws TransactionException {
-		cartService.updateCart(userId,cartId,cartApi);
+
+	@PutMapping(value = "/{cartId}/user/{userId}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<CartEnum> update(@PathVariable("cartId") String cartId, @PathVariable("userId") String userId,
+			@RequestBody @Validated CartApiUpdate cartApi) throws TransactionException {
+		cartService.update(userId, cartId, cartApi);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.UPDATE_OK);
+	}
+
+	@PutMapping(value = "/add/{cartId}/user/{userId}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<CartEnum> addProducts(@PathVariable("cartId") String cartId,
+			@PathVariable("userId") String userId, @RequestBody @Validated CartApiUpdate cartApi)
+			throws TransactionException {
+		cartService.addProducts(userId, cartId, cartApi);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.UPDATE_OK);
+	}
+
+	@PutMapping(value = "/del/{cartId}/user/{userId}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<CartEnum> delProducts(@PathVariable("cartId") String cartId,
+			@PathVariable("userId") String userId, @RequestBody @Validated CartApiUpdate cartApi)
+			throws TransactionException {
+		cartService.delProducts(userId, cartId, cartApi);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.UPDATE_OK);
 	}
 	
-	@PutMapping(value="/add/{cartId}/user/{userId}",produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<CartEnum> addProducts(@PathVariable("cartId") String cartId,@PathVariable("userId") String userId,@RequestBody @Validated CartApiUpdate cartApi) throws TransactionException {
-		cartService.addProducts(userId,cartId,cartApi);
+	@PutMapping(value = "/pay/{cartId}/user/{userId}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<CartEnum> paidCart(@PathVariable("cartId") String cartId,
+			@PathVariable("userId") String userId)
+			throws TransactionException {
+		cartService.updateStatus(userId, cartId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.UPDATE_OK);
 	}
-	
-	@PutMapping(value="/del/{cartId}/user/{userId}",produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<CartEnum> delProducts(@PathVariable("cartId") String cartId,@PathVariable("userId") String userId,@RequestBody @Validated CartApiUpdate cartApi) throws TransactionException {
-		cartService.delProducts(userId,cartId,cartApi);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.UPDATE_OK);
-	}
-	
+
 	@DeleteMapping(value = "/{cartId}")
-	public ResponseEntity<String> delete(@PathVariable("cartId") String cartId) throws TransactionException {
+	public ResponseEntity<CartEnum> delete(@PathVariable("cartId") String cartId) throws TransactionException {
 		cartService.delete(cartId);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(CartEnum.DELETE_OK);
 	}
 
 }

@@ -2,6 +2,8 @@ package com.carrito.compras.api;
 
 import java.time.LocalDate;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,14 +17,13 @@ import lombok.Setter;
 @JsonInclude(Include.NON_EMPTY)
 public class PromotionApi {
 
-	@JsonProperty(value = "id", required = false)
-	private String id;
-
+	@NotNull(message = "Start Date cannot be null")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	@JsonProperty(value = "startDate", required = false)
+	@JsonProperty(value = "startDate", required = true)
 	private LocalDate startDate;
 
+	@NotNull(message = "End Date cannot be null")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	@JsonProperty(value = "endDate", required = false)
+	@JsonProperty(value = "endDate", required = true)
 	private LocalDate endDate;
 }

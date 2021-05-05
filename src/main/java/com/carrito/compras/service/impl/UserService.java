@@ -1,11 +1,7 @@
 package com.carrito.compras.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +10,6 @@ import com.carrito.compras.enumerator.UserEnum;
 import com.carrito.compras.exception.TransactionException;
 import com.carrito.compras.mapper.Mapper;
 import com.carrito.compras.model.Cart;
-import com.carrito.compras.model.Product;
 import com.carrito.compras.model.User;
 import com.carrito.compras.repository.UserRepository;
 

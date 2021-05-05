@@ -13,7 +13,6 @@ import com.carrito.compras.api.UserApi;
 import com.carrito.compras.dto.CartDTO;
 import com.carrito.compras.dto.ProductDTO;
 import com.carrito.compras.dto.UserDTO;
-import com.carrito.compras.enumerator.CartStatus;
 import com.carrito.compras.model.Cart;
 import com.carrito.compras.model.Product;
 import com.carrito.compras.model.Promotion;
@@ -51,10 +50,6 @@ public class Mapper {
 		return cart;
 	}
 
-	private static CartStatus mapperToEnum(String status) {
-		return modelMapper.map(CartStatus.valueOf(status), CartStatus.class);
-	}
-
 	public static List<ProductDTO> mapperToProductsDTO(List<Product> products) {
 		List<ProductDTO> productDTOList = new ArrayList<>();
 		products.stream().forEach(p -> productDTOList.add(mapperToProductDTO(p)));
@@ -68,12 +63,12 @@ public class Mapper {
 	}
 
 	public static User mapperToUser(UserApi userApi) {
-		User user=modelMapper.map(userApi, User.class);
+		User user = modelMapper.map(userApi, User.class);
 		return user;
 	}
 
 	public static UserApi mapperToUserApi(User user) {
-		UserApi userApi=modelMapper.map(user, UserApi.class);
+		UserApi userApi = modelMapper.map(user, UserApi.class);
 		return userApi;
 	}
 
@@ -96,5 +91,5 @@ public class Mapper {
 	public static PromotionApi mapperToPromotion(Promotion promotion) {
 		return modelMapper.map(promotion, PromotionApi.class);
 	}
-	
+
 }

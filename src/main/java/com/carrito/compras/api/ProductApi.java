@@ -15,9 +15,6 @@ import lombok.Setter;
 @JsonInclude(Include.NON_EMPTY)
 public class ProductApi {
 
-	@JsonProperty(value = "id", required = false)
-	private String id;
-
 	@NotBlank(message = "Title cannot be null")
 	@JsonProperty(value = "title", required = true)
 	private String title;
